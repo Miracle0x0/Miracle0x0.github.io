@@ -1,0 +1,909 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Asuna">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="CMU15-445 2022 Fall Project 1 实验记录  0. 脚本工具 修改之前的辅助脚本，使之能够接受参数。  format-checker.sh  1234567891011project_num&#x3D;$1case $project_num in[0-9])  make format  make check-lint  make check-clang-tidy-p&quot;$">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CMU15-445 2022 Project 1">
+<meta property="og:url" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/index.html">
+<meta property="og:site_name" content="Miracle">
+<meta property="og:description" content="CMU15-445 2022 Fall Project 1 实验记录  0. 脚本工具 修改之前的辅助脚本，使之能够接受参数。  format-checker.sh  1234567891011project_num&#x3D;$1case $project_num in[0-9])  make format  make check-lint  make check-clang-tidy-p&quot;$">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/BufferPoolManager.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/localtest-p1-extendible_hash_table.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/Backward%20K-distance.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/localtest-p1-lru_k_replacer.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/Buffer%20pool%20organization%20and%20meta-data.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/localtest-p1-buffer_pool_manager_instance.png">
+<meta property="og:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/onlinetest-p1.png">
+<meta property="article:published_time" content="2023-01-14T13:33:09.000Z">
+<meta property="article:modified_time" content="2023-01-23T07:54:15.573Z">
+<meta property="article:author" content="Asuna">
+<meta property="article:tag" content="实验">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/BufferPoolManager.png">
+  
+  
+  
+  <title>CMU15-445 2022 Project 1 - Miracle</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"anotheronezjy.github.io","root":"/","version":"1.9.4","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"lLCGtenejQquvh2AhfStUdQ3-MdYXbMMI","app_key":"IjlAjTwvxx4PfkNAI2M6E6GZ","server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+  
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://fastly.jsdelivr.net/npm/katex@0.10.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --><meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Fluid</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="CMU15-445 2022 Project 1"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-01-14 21:33" pubdate>
+          2023年1月14日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          15k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          124 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="leancloud-page-views"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CMU15-445 2022 Project 1</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="cmu15-445-2022-fall-project-1-实验记录"><a class="markdownIt-Anchor" href="#cmu15-445-2022-fall-project-1-实验记录"></a> CMU15-445 2022 Fall Project 1 实验记录</h1>
+<h2 id="0-脚本工具"><a class="markdownIt-Anchor" href="#0-脚本工具"></a> 0. 脚本工具</h2>
+<p>修改之前的辅助脚本，使之能够接受参数。</p>
+<ul>
+<li><code>format-checker.sh</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell">project_num=$1<br>case $project_num in<br>[0-9])<br>  make format<br>  make check-lint<br>  make check-clang-tidy-p&quot;$project_num&quot;<br>  ;;<br>*)<br>  echo &quot;Unknown Project Number!&quot;<br>  ;;<br>esac<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>test-executor.sh</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs shell">project_num=$1<br>case $project_num in<br>0)<br>  make starter_trie_test<br>  ./test/starter_trie_test<br>  ;;<br>1)<br>  make extendible_hash_table_test<br>  ./test/extendible_hash_table_test<br>  make lru_k_replacer_test<br>  ./test/lru_k_replacer_test<br>  make buffer_pool_manager_instance_test<br>  ./test/buffer_pool_manager_instance_test<br>  ;;<br>*)<br>  echo &quot;Unknown Project Number!&quot;<br>  ;;<br>esac<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>auto-make-check.sh</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs shell">project_num=$1<br>case $project_num in<br>[0-9])<br>  echo &quot;Current Project Number: $project_num&quot;<br>  sh ../project-maker.sh<br>  sh ../format-checker.sh &quot;$project_num&quot;<br>  sh ../test-executor.sh &quot;$project_num&quot;<br>  ;;<br>*)<br>  echo &quot;Unknown Project Number!&quot;<br>  exit<br>  ;;<br>esac<br></code></pre></td></tr></table></figure>
+<h2 id="1-实验说明"><a class="markdownIt-Anchor" href="#1-实验说明"></a> 1. 实验说明</h2>
+<p>CMU15-445 官网的说明内容 <a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2022/project1/">https://15445.courses.cs.cmu.edu/fall2022/project1/</a></p>
+<h2 id="2-项目介绍"><a class="markdownIt-Anchor" href="#2-项目介绍"></a> 2. 项目介绍</h2>
+<p>Project 1 需要完成三个任务：</p>
+<ol>
+<li><a href="#21-extendible-hash-table">可扩展哈希表（Extendible Hash Table）</a></li>
+<li><a href>LRU-K 置换策略（LRU-K Replacement Policy）</a></li>
+<li><a href>缓冲池管理（Buffer Pool Manager）</a></li>
+</ol>
+<p><code>Extendible Hash Table</code> 和 <code>LRU-K Replacer</code> 是 <code>Buffer Pool Manager</code> 内部的组件，后者向系统提供获取 Page 的接口。系统通过提供 <code>page_id</code> 向 <code>Buffer Pool Manager</code> 请求 Page，而不关心从哪里（disk 或 memory）获取 Page，也不关心 Page 在它们之间如何移动，这些操作统统交给 <code>Buffer Pool Manager</code> 完成。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/BufferPoolManager.png" srcset="/img/loading.gif" lazyload alt="Buffer Pool Manager 和其它组件的关系"></p>
+<h3 id="21-extendible-hash-table"><a class="markdownIt-Anchor" href="#21-extendible-hash-table"></a> 2.1 Extendible Hash Table</h3>
+<h4 id="211-参考资料"><a class="markdownIt-Anchor" href="#211-参考资料"></a> 2.1.1 参考资料</h4>
+<p>这部分内容我参考的资料主要有：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2022/slides/07-hashtables.pdf">CMU hashtables 课件</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Extendible_hashing">维基百科 Extendible_hashing</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.geeksforgeeks.org/extendible-hashing-dynamic-approach-to-dbms/">geeksforgeeks</a></li>
+</ol>
+<p>这位博主的<a target="_blank" rel="noopener" href="https://www.inlighting.org/archives/extendible-hash-table-algorithm">文章</a>也给了我一定的启发，尤其是其中提到的收缩（Shrink）操作，是实验中没有要求的。</p>
+<h4 id="212-设计总览"><a class="markdownIt-Anchor" href="#212-设计总览"></a> 2.1.2 设计总览</h4>
+<p><code>ExtendibleHashTable</code> 是一个可拓展哈希表，在 Buffer Pool Manager 中存储 buffer pool 中 page id 和 frame id 的映射关系。</p>
+<p>Extendible Hash Table 主要由一个 directory 和多个 bucket 组成，在 <code>ExtendibleHashTable</code> 类中定义如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs c++">std::vector&lt;std::shared_ptr&lt;Bucket&gt;&gt; dir_;  <span class="hljs-comment">// The directory of the hash table</span><br></code></pre></td></tr></table></figure>
+<ul>
+<li><strong>directory</strong>: 一个指针数组，存放指向 bucket 的指针。用于查找 key 对应 value 所在的 bucket；</li>
+<li><strong>bucket</strong>: 一个链表，存放 value。bucket 有容量上限，必要时可以进行分裂和扩容。</li>
+</ul>
+<p>与我们所熟知的<strong>链式哈希表</strong>（Chained Hash Table）不同，Extendible Hash 中不同的指针可以指向同一个 bucket，而 Chained Hash 中每个指针对应一个 bucket；发生冲突时，Chained Hash 直接将新的 value 追加到 key 对应的 bucket 链表最后，而 Extendible Hash 则会判断 bucket 是否达到容量上限，如果达到则会进行一次分裂（split）操作，并增加新生成 bucket 的容量上限。Extendible Hash Table 的容量是由 directory 的 <strong>global depth</strong>（下文称 G）和 bucket 的 <strong>local depth</strong>（下文称 L）控制的，初始值均为 0，这样 directory 的初始容量为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>G</mi></msup><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^G = 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">G</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>，bucket 的初始容量为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mi>L</mi></msup><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">2^L = 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">L</span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span>。</p>
+<p>当插入一个键值对 (K, V) 时，首先用哈希函数计算 K 的哈希值 H(K)，再使用这个哈希值计算索引，将 V 放入索引对应的 bucket 中。索引的计算方式是取 H(K) 的低 G 位。例如，计算 H(K) = 146 = 1001 0010 B，如果 G = 4，则索引 index = 0010 B = 2，V 应被放入 directory 中 index 为 2 的指针指向的 bucket 中。</p>
+<p>上面提到过，当插入 (K, V) 时若 bucket 容量已满，需要进行扩容。首先将 local depth 加一，此时有两种可能的状况：</p>
+<ol>
+<li>
+<p><strong>L &lt; G</strong></p>
+<p>这时只有 bucket 需要扩容，directory 无需变化。这种情况对应的是有多个指针指向同一个 bucket，首先创建一个新的 bucket，然后重新分配原 bucket 中的键值对。</p>
+</li>
+<li>
+<p><strong>L = G</strong></p>
+<p>这时 bucket 和 directory 都需要扩容。首先将 global depth 加一，实现 directory 的容量翻倍，然后创建一个新的 bucket，重新分配键值对。</p>
+</li>
+</ol>
+<p>扩容时还需要注意几个问题：</p>
+<ul>
+<li>
+<p><strong>directory 扩容时，新的指针指向何处？</strong></p>
+<p>将扩容前 G 记作 G’，扩容后新增索引与原来索引的低 G’ 位是一一对应的，只有最高位不同，因此我们将新增索引指向低位索引指向的 bucket。</p>
+</li>
+<li>
+<p><strong>如何重新安排指针和重新分配键值对？</strong></p>
+<p>将指向同一个 bucket 的指针称为兄弟指针，可以推出兄弟指针的数量为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mn>2</mn><mrow><mi>G</mi><mo>−</mo><mi>L</mi></mrow></msup></mrow><annotation encoding="application/x-tex">2^{G - L}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">G</span><span class="mbin mtight">−</span><span class="mord mathnormal mtight">L</span></span></span></span></span></span></span></span></span></span></span></span> 个。由于兄弟指针的低位相同，我们先根据这一特征找到所有兄弟指针，然后按照新增最高位是 0 还是 1 分组，分别指向原 bucket 和新 bucket。至于键值对的分配，只需要重新计算 H(K) 对应的 index 并插入对应的 bucket 即可。</p>
+</li>
+</ul>
+<h4 id="213-实现思路"><a class="markdownIt-Anchor" href="#213-实现思路"></a> 2.1.3 实现思路</h4>
+<p>根据项目说明文档，我们需要实现 <code>ExtendibleHashTable</code> 类。首先实现嵌套类 <code>Bucket</code> 的相关方法。</p>
+<ul>
+<li><code>Bucket</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Bucket class for each hash table bucket that the directory points to.</span><br><span class="hljs-comment"> */</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">Bucket</span> &#123;<br>  <span class="hljs-keyword">public</span>:<br>   <span class="hljs-function"><span class="hljs-keyword">explicit</span> <span class="hljs-title">Bucket</span><span class="hljs-params">(<span class="hljs-type">size_t</span> size, <span class="hljs-type">int</span> depth = <span class="hljs-number">0</span>)</span></span>;<br><br>   <span class="hljs-comment">/** @brief Check if a bucket is full. */</span><br>   <span class="hljs-function"><span class="hljs-keyword">inline</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">IsFull</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">bool</span> </span>&#123; <span class="hljs-keyword">return</span> list_.<span class="hljs-built_in">size</span>() == size_; &#125;<br><br>   <span class="hljs-comment">/** @brief Get the local depth of the bucket. */</span><br>   <span class="hljs-function"><span class="hljs-keyword">inline</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">GetDepth</span><span class="hljs-params">()</span> <span class="hljs-type">const</span> -&gt; <span class="hljs-type">int</span> </span>&#123; <span class="hljs-keyword">return</span> depth_; &#125;<br><br>   <span class="hljs-comment">/** @brief Increment the local depth of a bucket. */</span><br>   <span class="hljs-function"><span class="hljs-keyword">inline</span> <span class="hljs-type">void</span> <span class="hljs-title">IncrementDepth</span><span class="hljs-params">()</span> </span>&#123; depth_++; &#125;<br><br>   <span class="hljs-function"><span class="hljs-keyword">inline</span> <span class="hljs-keyword">auto</span> <span class="hljs-title">GetItems</span><span class="hljs-params">()</span> -&gt; std::list&lt;std::pair&lt;K, V&gt;&gt; &amp; </span>&#123; <span class="hljs-keyword">return</span> list_; &#125;<br><br>   <span class="hljs-comment">/**</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * TODO(P1): Add implementation</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * @brief Find the value associated with the given key in the bucket.</span><br><span class="hljs-comment">    * @param key The key to be searched.</span><br><span class="hljs-comment">    * @param[out] value The value associated with the key.</span><br><span class="hljs-comment">    * @return True if the key is found, false otherwise.</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Find</span><span class="hljs-params">(<span class="hljs-type">const</span> K &amp;key, V &amp;value)</span> -&gt; <span class="hljs-type">bool</span></span>;<br><br>   <span class="hljs-comment">/**</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * TODO(P1): Add implementation</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * @brief Given the key, remove the corresponding key-value pair in the bucket.</span><br><span class="hljs-comment">    * @param key The key to be deleted.</span><br><span class="hljs-comment">    * @return True if the key exists, false otherwise.</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Remove</span><span class="hljs-params">(<span class="hljs-type">const</span> K &amp;key)</span> -&gt; <span class="hljs-type">bool</span></span>;<br><br>   <span class="hljs-comment">/**</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * TODO(P1): Add implementation</span><br><span class="hljs-comment">    *</span><br><span class="hljs-comment">    * @brief Insert the given key-value pair into the bucket.</span><br><span class="hljs-comment">    *      1. If a key already exists, the value should be updated.</span><br><span class="hljs-comment">    *      2. If the bucket is full, do nothing and return false.</span><br><span class="hljs-comment">    * @param key The key to be inserted.</span><br><span class="hljs-comment">    * @param value The value to be inserted.</span><br><span class="hljs-comment">    * @return True if the key-value pair is inserted, false otherwise.</span><br><span class="hljs-comment">    */</span><br>   <span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">Insert</span><span class="hljs-params">(<span class="hljs-type">const</span> K &amp;key, <span class="hljs-type">const</span> V &amp;value)</span> -&gt; <span class="hljs-type">bool</span></span>;<br><br>  <span class="hljs-keyword">private</span>:<br>   <span class="hljs-comment">// TODO(student): You may add additional private members and helper functions</span><br>   <span class="hljs-type">size_t</span> size_;<br>   <span class="hljs-type">int</span> depth_;<br>   std::list&lt;std::pair&lt;K, V&gt;&gt; list_;<br>&#125;;<br></code></pre></td></tr></table></figure>
+<p><code>Bucket</code> 类主要实现三个方法：<code>Find</code>、<code>Remove</code> 和 <code>Insert</code>。这三个方法的实现比较简单，遍历找到对应的键值对然后进行操作即可。项目采用 C++ 17 标准，在遍历键值对的时候可以使用<strong>结构化绑定</strong>(structured binding)。实现了 <code>Bucket</code> 类之后，我们就可以在 <code>ExtendibleHashTable</code> 类中使用这些方法。</p>
+<p><code>ExtendibleHashTable</code> 类也主要实现三个方法：<code>Find</code>、<code>Remove</code> 和 <code>Insert</code>。</p>
+<ul>
+<li>
+<p><code>Find</code> 实现</p>
+<p>使用提供的 <code>IndexOf</code> 方法计算下标：</p>
+<ul>
+<li><code>IndexOf</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> K, <span class="hljs-keyword">typename</span> V&gt;<br><span class="hljs-keyword">auto</span> ExtendibleHashTable&lt;K, V&gt;::<span class="hljs-built_in">IndexOf</span>(<span class="hljs-type">const</span> K &amp;key) -&gt; <span class="hljs-type">size_t</span> &#123;<br>  <span class="hljs-type">int</span> mask = (<span class="hljs-number">1</span> &lt;&lt; global_depth_) - <span class="hljs-number">1</span>;<br>  <span class="hljs-keyword">return</span> std::<span class="hljs-built_in">hash</span>&lt;K&gt;()(key) &amp; mask;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>找到 bucket 后，调用 bucket 的 <code>Find</code> 方法查找即可。</p>
+</li>
+<li>
+<p><code>Remove</code> 实现</p>
+<p>由于实验没有要求实现空桶的合并收缩，我们找到 bucket 后，和 <code>Find</code> 类似，调用 bucket 的 <code>Remove</code> 方法删除即可。</p>
+</li>
+<li>
+<p><code>Insert</code> 实现</p>
+<p>这一部分需要考虑上面讨论过的扩容和分裂。</p>
+<p><code>RedistributeBucket</code> 方法实现如下：</p>
+<ul>
+<li><code>RedistributeBucket</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> K, <span class="hljs-keyword">typename</span> V&gt;<br><span class="hljs-type">void</span> ExtendibleHashTable&lt;K, V&gt;::<span class="hljs-built_in">RedistributeBucket</span>(std::shared_ptr&lt;Bucket&gt; bucket) &#123;<br>  <span class="hljs-keyword">if</span> (bucket-&gt;<span class="hljs-built_in">GetDepth</span>() == <span class="hljs-built_in">GetGlobalDepthInternal</span>()) &#123;<br>    <span class="hljs-comment">// 局部深度等于全局深度，需要扩容，更新全局深度和目录容量</span><br>    global_depth_++;<br>    <span class="hljs-keyword">auto</span> dir_capacity = dir_.<span class="hljs-built_in">size</span>();<br>    dir_.<span class="hljs-built_in">reserve</span>(dir_capacity &lt;&lt; <span class="hljs-number">1</span>);<br>    std::<span class="hljs-built_in">copy_n</span>(dir_.<span class="hljs-built_in">begin</span>(), dir_capacity, std::<span class="hljs-built_in">back_inserter</span>(dir_));<br>  &#125;<br>  <span class="hljs-comment">// 进行分裂</span><br>  <span class="hljs-keyword">auto</span> local_depth = bucket-&gt;<span class="hljs-built_in">GetDepth</span>();<br>  <span class="hljs-keyword">auto</span> local_mask = <span class="hljs-number">1</span> &lt;&lt; local_depth;<br>  <span class="hljs-keyword">auto</span> new_bucket0 = std::<span class="hljs-built_in">make_shared</span>&lt;Bucket&gt;(bucket_size_, local_depth + <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">auto</span> new_bucket1 = std::<span class="hljs-built_in">make_shared</span>&lt;Bucket&gt;(bucket_size_, local_depth + <span class="hljs-number">1</span>);<br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">const</span> <span class="hljs-keyword">auto</span> &amp;[k, v] : bucket-&gt;<span class="hljs-built_in">GetItems</span>()) &#123;<br>    <span class="hljs-keyword">auto</span> item_hash = std::<span class="hljs-built_in">hash</span>&lt;K&gt;()(k);<br>    <span class="hljs-keyword">if</span> (<span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">bool</span>&gt;(item_hash &amp; local_mask)) &#123;<br>      new_bucket1-&gt;<span class="hljs-built_in">Insert</span>(k, v);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      new_bucket0-&gt;<span class="hljs-built_in">Insert</span>(k, v);<br>    &#125;<br>  &#125;<br>  num_buckets_++;<br><br>  <span class="hljs-comment">// 更新目录</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-type">size_t</span> i = <span class="hljs-number">0</span>; i &lt; dir_.<span class="hljs-built_in">size</span>(); i++) &#123;<br>    <span class="hljs-keyword">if</span> (dir_[i] == bucket) &#123;<br>      <span class="hljs-keyword">if</span> (<span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">bool</span>&gt;(i &amp; local_mask)) &#123;<br>        dir_[i] = new_bucket1;<br>      &#125; <span class="hljs-keyword">else</span> &#123;<br>        dir_[i] = new_bucket0;<br>      &#125;<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在插入 (K, V) 时，如果需要重新分配 bucket，则调用该方法。<code>Insert</code> 方法实现如下：</p>
+<ul>
+<li><code>Insert</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">template</span> &lt;<span class="hljs-keyword">typename</span> K, <span class="hljs-keyword">typename</span> V&gt;<br><span class="hljs-type">void</span> ExtendibleHashTable&lt;K, V&gt;::<span class="hljs-built_in">Insert</span>(<span class="hljs-type">const</span> K &amp;key, <span class="hljs-type">const</span> V &amp;value) &#123;<br>  <span class="hljs-comment">//  UNREACHABLE(&quot;not implemented&quot;);</span><br>  <span class="hljs-function">std::scoped_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(latch_)</span></span>;<br><br>  <span class="hljs-keyword">auto</span> bucket = dir_[<span class="hljs-built_in">IndexOf</span>(key)];<br>  <span class="hljs-keyword">while</span> (bucket-&gt;<span class="hljs-built_in">IsFull</span>()) &#123;  <span class="hljs-comment">// 进行重整</span><br>    <span class="hljs-built_in">RedistributeBucket</span>(bucket);<br>    bucket = dir_[<span class="hljs-built_in">IndexOf</span>(key)];<br>  &#125;<br>  <span class="hljs-comment">// 执行插入</span><br>  bucket = dir_[<span class="hljs-built_in">IndexOf</span>(key)];<br>  bucket-&gt;<span class="hljs-built_in">Insert</span>(key, value);<br>&#125;<br></code></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="214-测试结果"><a class="markdownIt-Anchor" href="#214-测试结果"></a> 2.1.4 测试结果</h4>
+<p>阶段性完成，只能跑一下本地测试。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">make extendible_hash_table_test<br>./test/extendible_hash_table_test<br></code></pre></td></tr></table></figure>
+<p>测试结果如下。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/localtest-p1-extendible_hash_table.png" srcset="/img/loading.gif" lazyload alt="localtest-p1-extendible_hash_table"></p>
+<h3 id="22-lru-k-replacer"><a class="markdownIt-Anchor" href="#22-lru-k-replacer"></a> 2.2 LRU-K Replacer</h3>
+<h4 id="221-参考资料"><a class="markdownIt-Anchor" href="#221-参考资料"></a> 2.2.1 参考资料</h4>
+<p>这部分内容我参考的资料主要有：</p>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://www.cs.cmu.edu/~natassa/courses/15-721/papers/p297-o_neil.pdf">15-721 参考论文</a></li>
+<li><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Page_replacement_algorithm#Least_recently_used">维基百科 LRU</a></li>
+</ol>
+<p>LRU 策略在组成原理和操作系统等课程中都有涉及，如果忘记了可以写一写 LeetCode <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/lru-cache/description/">这道题</a>复习一下。代码如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-keyword">class</span> <span class="hljs-title class_">LRUCache</span> &#123;<br>    <span class="hljs-keyword">typedef</span> list&lt;pair&lt;<span class="hljs-type">int</span>, <span class="hljs-type">int</span>&gt;&gt; lru_type;<br><br><span class="hljs-keyword">public</span>:<br>    <span class="hljs-built_in">LRUCache</span>(<span class="hljs-type">int</span> capacity) : <span class="hljs-built_in">capacity_</span>(capacity) &#123;&#125;<br><br>    <span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">get</span><span class="hljs-params">(<span class="hljs-type">int</span> key)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (lru_map.<span class="hljs-built_in">find</span>(key) == lru_map.<span class="hljs-built_in">end</span>())<br>            <span class="hljs-keyword">return</span> <span class="hljs-number">-1</span>;<br>        <span class="hljs-keyword">auto</span> val = *lru_map[key];<br>        lru_cache.<span class="hljs-built_in">erase</span>(lru_map[key]);<br>        lru_cache.<span class="hljs-built_in">push_front</span>(val);<br>        lru_map[key] = lru_cache.<span class="hljs-built_in">begin</span>();<br>        <span class="hljs-keyword">return</span> val.second;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">put</span><span class="hljs-params">(<span class="hljs-type">int</span> key, <span class="hljs-type">int</span> value)</span> </span>&#123;<br>        <span class="hljs-keyword">if</span> (lru_map.<span class="hljs-built_in">find</span>(key) == lru_map.<span class="hljs-built_in">end</span>()) &#123;<br>            <span class="hljs-keyword">if</span> (lru_cache.<span class="hljs-built_in">size</span>() == capacity_) &#123;<br>                lru_map.<span class="hljs-built_in">erase</span>(lru_cache.<span class="hljs-built_in">back</span>().first);<br>                lru_cache.<span class="hljs-built_in">pop_back</span>();<br>            &#125;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            lru_cache.<span class="hljs-built_in">erase</span>(lru_map[key]);<br>        &#125;<br>        lru_cache.<span class="hljs-built_in">push_front</span>(<span class="hljs-built_in">make_pair</span>(key, value));<br>        lru_map[key] = lru_cache.<span class="hljs-built_in">begin</span>();<br>    &#125;<br><br><span class="hljs-keyword">private</span>:<br>    <span class="hljs-type">int</span> capacity_;<br>    lru_type lru_cache;<br>    unordered_map&lt;<span class="hljs-type">int</span>, lru_type::iterator&gt; lru_map;<br>&#125;;<br><br><span class="hljs-comment">/**</span><br><span class="hljs-comment"> * Your LRUCache object will be instantiated and called as such:</span><br><span class="hljs-comment"> * LRUCache* obj = new LRUCache(capacity);</span><br><span class="hljs-comment"> * int param_1 = obj-&gt;get(key);</span><br><span class="hljs-comment"> * obj-&gt;put(key,value);</span><br><span class="hljs-comment"> */</span><br></code></pre></td></tr></table></figure>
+<h4 id="222-设计总览"><a class="markdownIt-Anchor" href="#222-设计总览"></a> 2.2.2 设计总览</h4>
+<p><code>LRU-K Replacer</code> 用于记录 buffer pool 中 Page 被引用的情况，当 buffer pool 满时会根据引用记录选出需要被替换出的 Page。Page 存放在 buffer pool 的 frame 中，buffer pool 的大小就是 frame 的数量，每个 frame 可以存放一个 Page。</p>
+<p>在一般的 LRU 算法中，我们只需要记录 Page <strong>最近一次</strong>被引用的时间。当发生替换时，算法选择引用时间最早的 Page 淘汰。这种算法在特定情况下存在<strong>缓存污染问题</strong>——假设有一段很长的一次性顺序访问序列到来，就会将有用的 Cache 全部“挤掉”，缓存被这段以后可能再也不会出现的序列占据，从而失去了加速置换的作用。</p>
+<p>而在 LRU-K 算法中，我们需要记录 Page <strong>最近 K 次</strong>被引用的时间。当发生替换时，若所有记录的 Page <strong>都被引用不少于 K 次</strong>，则选择最近第 K 次被引用时间最早的 Page 淘汰；若<strong>存在被引用次数少于 K 次</strong>的 Page，则使用普通的 LRU 算法选择这些 Page 中的一个淘汰。</p>
+<p>简单来说，LRU-K 算法就是<strong>优先淘汰引用次数少于 K 次的 Page，对于引用次数达到 K 次的 Page 按照 LRU 算法进行淘汰</strong>。参考论文给出 Backward K-distance 概念如下：</p>
+<p><img src="/2023/01/14/CMU-2022-P1/Backward%20K-distance.png" srcset="/img/loading.gif" lazyload alt="Backward K-distance"></p>
+<p>这样，我们认为引用次数没有达到 K 次的 Page 具有 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo>+</mo><mi mathvariant="normal">∞</mi></mrow><annotation encoding="application/x-tex">+\infty</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">+</span><span class="mord">∞</span></span></span></span> 的 Backward K-distance，会被优先淘汰。如果存在多个这样的 Page，则淘汰引用记录最早的 Page，即使用 <strong>FIFO</strong> 策略。</p>
+<p>一般的 LRU 算法采用哈希表和双向链表实现，可以保证各个操作的复杂度为 <span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>O</mi><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">O(1)</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathnormal" style="margin-right:0.02778em;">O</span><span class="mopen">(</span><span class="mord">1</span><span class="mclose">)</span></span></span></span>。对于 LRU-K 算法，我们维护一个<strong>历史队列</strong>和一个<strong>缓存队列</strong>，历史队列记录引用次数未达到 K 次的 frame id，缓存队列记录引用次数达到 K 次的 frame id。访问某个 frame id 时，将访问计数加一，如果是第一次访问（即不在历史队列中），则加入历史队列；如果正好达到 K 次，将其从历史队列移动到缓存队列；如果超过 K 次，将其移动到缓存队列的头部。淘汰时，优先考虑历史队列，历史队列不为空则淘汰历史队列中最早访问的 frame id，否则按照 LRU 淘汰缓存队列中的 frame id。</p>
+<p>缓存队列采用 LRU，因此访问已经在缓存队列中的 frame id 时需要将其移动到头部；历史队列采用 FIFO，因此访问已经在历史队列中的 frame id 时无需移动。</p>
+<h4 id="223-实现思路"><a class="markdownIt-Anchor" href="#223-实现思路"></a> 2.2.3 实现思路</h4>
+<p>按照上面的思路，我们在 <code>LRUKReplacer</code> 中启用和添加如下成员：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-type">size_t</span> curr_size_&#123;<span class="hljs-number">0</span>&#125;;                           <span class="hljs-comment">// 可回收 frame 的数量</span><br><span class="hljs-type">size_t</span> replacer_size_;                          <span class="hljs-comment">// 标注 frame_id 的范围</span><br><span class="hljs-type">size_t</span> k_;<br>std::mutex latch_;<br><br><span class="hljs-comment">// ? My additions</span><br>std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, <span class="hljs-type">size_t</span>&gt; access_count_;  <span class="hljs-comment">// 访问计数</span><br><br>std::list&lt;<span class="hljs-type">frame_id_t</span>&gt; history_list_;  <span class="hljs-comment">// 历史记录</span><br>std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, std::list&lt;<span class="hljs-type">frame_id_t</span>&gt;::iterator&gt; history_map_;<br><br>std::list&lt;<span class="hljs-type">frame_id_t</span>&gt; cache_list_;  <span class="hljs-comment">// 缓存记录</span><br>std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, std::list&lt;<span class="hljs-type">frame_id_t</span>&gt;::iterator&gt; cache_map_;<br><br>std::unordered_map&lt;<span class="hljs-type">frame_id_t</span>, <span class="hljs-type">bool</span>&gt; is_evictable_;  <span class="hljs-comment">// 可换出标记</span><br></code></pre></td></tr></table></figure>
+<p>这部分代码比较简单，这里给出 <code>RecordAccess</code> 和 <code>Evict</code> 的实现。</p>
+<ul>
+<li><code>RecordAccess</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-type">void</span> <span class="hljs-title">LRUKReplacer::RecordAccess</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> frame_id)</span> </span>&#123;<br>  <span class="hljs-function">std::scoped_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(latch_)</span></span>;<br>  <span class="hljs-comment">// 检查 frame_id 是否合法</span><br>  <span class="hljs-keyword">if</span> (frame_id &gt; <span class="hljs-built_in">static_cast</span>&lt;<span class="hljs-type">int</span>&gt;(replacer_size_)) &#123;<br>    <span class="hljs-keyword">throw</span> std::<span class="hljs-built_in">invalid_argument</span>(<span class="hljs-string">&quot;Invalid frame_id &quot;</span> + std::<span class="hljs-built_in">to_string</span>(frame_id));<br>  &#125;<br>  access_count_[frame_id]++;            <span class="hljs-comment">// 访问计数加一</span><br>  <span class="hljs-keyword">if</span> (access_count_[frame_id] == k_) &#123;  <span class="hljs-comment">// 达到 k_，history -&gt; cache</span><br>    history_list_.<span class="hljs-built_in">erase</span>(history_map_[frame_id]);<br>    history_map_.<span class="hljs-built_in">erase</span>(frame_id);<br>    cache_list_.<span class="hljs-built_in">emplace_front</span>(frame_id);<br>    cache_map_[frame_id] = cache_list_.<span class="hljs-built_in">begin</span>();<br>  &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (access_count_[frame_id] &gt; k_) &#123;  <span class="hljs-comment">// 超过 k_，一定在 cache</span><br>    <span class="hljs-comment">// ? 若在 cache 中，则先将其删除，然后再移到头部</span><br>    <span class="hljs-keyword">if</span> (cache_map_.<span class="hljs-built_in">find</span>(frame_id) != cache_map_.<span class="hljs-built_in">end</span>()) &#123;<br>      cache_list_.<span class="hljs-built_in">erase</span>(cache_map_[frame_id]);<br>    &#125;<br>    cache_list_.<span class="hljs-built_in">emplace_front</span>(frame_id);<br>    cache_map_[frame_id] = cache_list_.<span class="hljs-built_in">begin</span>();<br>  &#125; <span class="hljs-keyword">else</span> &#123;  <span class="hljs-comment">// 小于 k_，可能在 history</span><br>    <span class="hljs-comment">// ? 若不在 history 中，说明是第一次访问，则加入 history 头部</span><br>    <span class="hljs-comment">// ? 对于已经在 history 中的 frame，不作任何处理</span><br>    <span class="hljs-keyword">if</span> (history_map_.<span class="hljs-built_in">find</span>(frame_id) == history_map_.<span class="hljs-built_in">end</span>()) &#123;<br>      history_list_.<span class="hljs-built_in">emplace_front</span>(frame_id);<br>      history_map_[frame_id] = history_list_.<span class="hljs-built_in">begin</span>();<br>    &#125;<br>  &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>Evict</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">LRUKReplacer::Evict</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> *frame_id)</span> -&gt; <span class="hljs-type">bool</span> </span>&#123;<br>  <span class="hljs-function">std::scoped_lock&lt;std::mutex&gt; <span class="hljs-title">lock</span><span class="hljs-params">(latch_)</span></span>;<br>  <span class="hljs-keyword">if</span> (curr_size_ == <span class="hljs-number">0</span>) &#123;  <span class="hljs-comment">// 没有可换出的 frame，返回 false</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>  &#125;<br>  <span class="hljs-comment">// 首先考虑 history_list_ 中的 frame，反向查找可以被回收的 frame</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> it = history_list_.<span class="hljs-built_in">rbegin</span>(); it != history_list_.<span class="hljs-built_in">rend</span>(); it++) &#123;<br>    <span class="hljs-keyword">auto</span> cur_frame = *it;<br>    <span class="hljs-keyword">if</span> (is_evictable_[cur_frame]) &#123;  <span class="hljs-comment">// 该 frame 可以被换出</span><br>      access_count_[cur_frame] = <span class="hljs-number">0</span>;  <span class="hljs-comment">// 访问计数清零</span><br>      <span class="hljs-comment">// 将该 frame 相关信息从 history_list_ 和 history_map_ 中移除</span><br>      history_list_.<span class="hljs-built_in">erase</span>(history_map_[cur_frame]);<br>      history_map_.<span class="hljs-built_in">erase</span>(cur_frame);<br>      *frame_id = cur_frame;<br>      <span class="hljs-comment">// 更新记录信息</span><br>      curr_size_--;<br>      is_evictable_[cur_frame] = <span class="hljs-literal">false</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">// 然后考虑 cache_list_ 中的 frame，同样反向查找可以被回收的 frame</span><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">auto</span> it = cache_list_.<span class="hljs-built_in">rbegin</span>(); it != cache_list_.<span class="hljs-built_in">rend</span>(); it++) &#123;<br>    <span class="hljs-keyword">auto</span> cur_frame = *it;<br>    <span class="hljs-keyword">if</span> (is_evictable_[cur_frame]) &#123;  <span class="hljs-comment">// 该 frame 可以被换出</span><br>      access_count_[cur_frame] = <span class="hljs-number">0</span>;  <span class="hljs-comment">// 访问计数清零</span><br>      <span class="hljs-comment">// 将该 frame 相关信息从 cache_list_ 和 cache_map_ 中移除</span><br>      cache_list_.<span class="hljs-built_in">erase</span>(cache_map_[cur_frame]);<br>      cache_map_.<span class="hljs-built_in">erase</span>(cur_frame);<br>      *frame_id = cur_frame;<br>      <span class="hljs-comment">// 更新记录信息</span><br>      curr_size_--;<br>      is_evictable_[cur_frame] = <span class="hljs-literal">false</span>;<br>      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>    &#125;<br>  &#125;<br>  <span class="hljs-comment">// 都没有，则返回 false</span><br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="224-测试结果"><a class="markdownIt-Anchor" href="#224-测试结果"></a> 2.2.4 测试结果</h4>
+<p>阶段性完成，跑一下本地测试。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">make lru_k_replacer_test<br>./test/lru_k_replacer_test<br></code></pre></td></tr></table></figure>
+<p>测试结果如下。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/localtest-p1-lru_k_replacer.png" srcset="/img/loading.gif" lazyload alt="localtest-p1-lru_k_replacer"></p>
+<h3 id="23-buffer-pool-manager"><a class="markdownIt-Anchor" href="#23-buffer-pool-manager"></a> 2.3 Buffer Pool Manager</h3>
+<h4 id="231-参考资料"><a class="markdownIt-Anchor" href="#231-参考资料"></a> 2.3.1 参考资料</h4>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2022/notes/06-bufferpool.pdf">CMU notes bufferpool</a></li>
+<li><a target="_blank" rel="noopener" href="https://15445.courses.cs.cmu.edu/fall2022/slides/06-bufferpool.pdf">CMU slides bufferpool</a></li>
+</ol>
+<h4 id="232-设计总览"><a class="markdownIt-Anchor" href="#232-设计总览"></a> 2.3.2 设计总览</h4>
+<p>Buffer Pool 充当数据库上层设施和磁盘文件之间的缓冲区，类似于 Cache 在 CPU 和内存之间的作用。在 Bustub 中，Page 是承载 4K 大小的数据的类，可以通过 <code>DiskManager</code> 从磁盘文件中读写，<code>page_id</code> 是其编号；Frame 是 Buffer Pool Manager 中存放 Page 的槽位，<code>frame_id</code> 是某个 Page 在数组中的下标。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/Buffer%20pool%20organization%20and%20meta-data.png" srcset="/img/loading.gif" lazyload alt="Buffer pool organization and meta-data"></p>
+<p>前面实现的 Extendible Hash Table 和 LRU-K Replacer 在这里如何使用呢？相对于 Buffer Pool Manager，外界提供 <code>page_id</code> 给 Buffer Pool Manager，Buffer Pool Manager 需要维护一个 <code>page_id</code> 到 <code>frame_id</code> 的映射，这个映射就交给 <code>ExtendibleHashTable</code> 来实现，而读取和淘汰 Page 到 Buffer Pool Manager 的操作就交给 <code>LRUKReplacer</code> 来实现。</p>
+<p>Buffer Pool Manager 中相对重要的数据成员如下：</p>
+<ul>
+<li><strong>pages</strong>: buffer pool 中缓存 pages 的指针数组</li>
+<li><strong>disk_manager</strong>: 框架提供，可以用来读取 disk 上指定 <code>page_id</code> 的 page 数据，或者向 disk 上给定 <code>page_id</code> 对应的 page 里写入数据</li>
+<li><strong>page_table</strong>: 即 Extendible Hash Table，用来将 page id 映射到 frame id，即 page 在 buffer pool 中的位置</li>
+<li><strong>replacer</strong>: 即 LRU-K Replacer，在需要淘汰 page 腾出空间时，告诉我们应该驱逐哪个 page</li>
+<li><strong>free_list</strong>: 空闲 frame 列表</li>
+</ul>
+<h4 id="233-实现思路"><a class="markdownIt-Anchor" href="#233-实现思路"></a> 2.3.3 实现思路</h4>
+<p>在前面两个组件的基础上完成这部分代码即可。为了方便代码复用，封装一个 <code>GetAvailbleFrame</code> 方法，用于返回可以使用的 <code>frame_id</code>。</p>
+<ul>
+<li><code>GetAvailbleFrame</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">BufferPoolManagerInstance::GetAvailableFrame</span><span class="hljs-params">(<span class="hljs-type">frame_id_t</span> *out_frame_id)</span> -&gt; <span class="hljs-type">bool</span> </span>&#123;<br>  <span class="hljs-type">frame_id_t</span> f_id;<br>  <span class="hljs-comment">// ? 首先检查是否有空闲的 frame，有则取第一个</span><br>  <span class="hljs-keyword">if</span> (!free_list_.<span class="hljs-built_in">empty</span>()) &#123;<br>    f_id = free_list_.<span class="hljs-built_in">front</span>();<br>    free_list_.<span class="hljs-built_in">pop_front</span>();<br>    *out_frame_id = f_id;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;<br>  <span class="hljs-comment">// ? 没有空闲的 frame，则看看有没有可以替换出去的 Page</span><br>  <span class="hljs-keyword">if</span> (replacer_-&gt;<span class="hljs-built_in">Evict</span>(&amp;f_id)) &#123;<br>    <span class="hljs-comment">// 检查是否是 dirty Page，是则将其写回到磁盘</span><br>    <span class="hljs-keyword">if</span> (pages_[f_id].is_dirty_) &#123;<br>      disk_manager_-&gt;<span class="hljs-built_in">WritePage</span>(pages_[f_id].page_id_, pages_[f_id].data_);<br>      pages_[f_id].is_dirty_ = <span class="hljs-literal">false</span>;<br>    &#125;<br>    page_table_-&gt;<span class="hljs-built_in">Remove</span>(pages_[f_id].page_id_);<br>    *out_frame_id = f_id;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>使用这个方法的 <code>NewPgImp</code> 和 <code>FetchPgImp</code> 方法如下。</p>
+<ul>
+<li><code>NewPgImp</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">BufferPoolManagerInstance::NewPgImp</span><span class="hljs-params">(<span class="hljs-type">page_id_t</span> *page_id)</span> -&gt; Page * </span>&#123;<br>  <span class="hljs-function">std::scoped_lock <span class="hljs-title">lock</span><span class="hljs-params">(latch_)</span></span>;<br>  <span class="hljs-type">frame_id_t</span> f_id;<br>  <span class="hljs-comment">// ? 尝试获取一个可用的 frame id</span><br>  <span class="hljs-keyword">if</span> (!<span class="hljs-built_in">GetAvailableFrame</span>(&amp;f_id)) &#123;<br>    page_id = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;<br>  &#125;<br>  pages_[f_id].page_id_ = <span class="hljs-built_in">AllocatePage</span>();<br>  pages_[f_id].<span class="hljs-built_in">ResetMemory</span>();<br>  pages_[f_id].pin_count_ = <span class="hljs-number">1</span>;<br>  page_table_-&gt;<span class="hljs-built_in">Insert</span>(pages_[f_id].page_id_, f_id);<br>  replacer_-&gt;<span class="hljs-built_in">RecordAccess</span>(f_id);<br>  replacer_-&gt;<span class="hljs-built_in">SetEvictable</span>(f_id, <span class="hljs-literal">false</span>);<br>  *page_id = pages_[f_id].page_id_;<br>  <span class="hljs-keyword">return</span> &amp;pages_[f_id];<br>&#125;<br></code></pre></td></tr></table></figure>
+<ul>
+<li><code>FetchPgImp</code></li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-function"><span class="hljs-keyword">auto</span> <span class="hljs-title">BufferPoolManagerInstance::FetchPgImp</span><span class="hljs-params">(<span class="hljs-type">page_id_t</span> page_id)</span> -&gt; Page * </span>&#123;<br>  <span class="hljs-function">std::scoped_lock <span class="hljs-title">lock</span><span class="hljs-params">(latch_)</span></span>;<br>  <span class="hljs-type">frame_id_t</span> f_id;<br>  <span class="hljs-comment">// ? 请求的 Page 位于 buffer pool 中，直接返回</span><br>  <span class="hljs-keyword">if</span> (page_table_-&gt;<span class="hljs-built_in">Find</span>(page_id, f_id)) &#123;<br>    pages_[f_id].pin_count_++;<br>    replacer_-&gt;<span class="hljs-built_in">RecordAccess</span>(f_id);<br>    replacer_-&gt;<span class="hljs-built_in">SetEvictable</span>(f_id, <span class="hljs-literal">false</span>);<br>    <span class="hljs-keyword">return</span> &amp;pages_[f_id];<br>  &#125;<br>  <span class="hljs-comment">// ? Page 不在 buffer pool 中</span><br>  <span class="hljs-keyword">if</span> (<span class="hljs-built_in">GetAvailableFrame</span>(&amp;f_id)) &#123;<br>    pages_[f_id].page_id_ = page_id;<br>    pages_[f_id].<span class="hljs-built_in">ResetMemory</span>();<br>    pages_[f_id].pin_count_ = <span class="hljs-number">1</span>;<br>    page_table_-&gt;<span class="hljs-built_in">Insert</span>(page_id, f_id);<br>    disk_manager_-&gt;<span class="hljs-built_in">ReadPage</span>(page_id, pages_[f_id].data_);<br>    replacer_-&gt;<span class="hljs-built_in">RecordAccess</span>(f_id);<br>    replacer_-&gt;<span class="hljs-built_in">SetEvictable</span>(f_id, <span class="hljs-literal">false</span>);<br>    <span class="hljs-keyword">return</span> &amp;pages_[f_id];<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">nullptr</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>其它方法的实现不在此给出，总的来说就是注意细节，包括脏页的处理。</p>
+<h4 id="234-测试结果"><a class="markdownIt-Anchor" href="#234-测试结果"></a> 2.3.4 测试结果</h4>
+<p>到这里，已经完成了 project 1 的全部代码，执行本地测试。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">make buffer_pool_manager_instance_test<br>./test/buffer_pool_manager_instance_test<br></code></pre></td></tr></table></figure>
+<p>测试结果如下。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/localtest-p1-buffer_pool_manager_instance.png" srcset="/img/loading.gif" lazyload alt="localtest-p1-buffer_pool_manager_instance"></p>
+<h2 id="3-线上测试"><a class="markdownIt-Anchor" href="#3-线上测试"></a> 3. 线上测试</h2>
+<p>按要求提交代码，线上测试结果如下。</p>
+<p><img src="/2023/01/14/CMU-2022-P1/onlinetest-p1.png" srcset="/img/loading.gif" lazyload alt="onlinetest-p1"></p>
+<h2 id="4-实验总结"><a class="markdownIt-Anchor" href="#4-实验总结"></a> 4. 实验总结</h2>
+<p>P1 的实现对我来说最难的部分在于 Extendible Hash Table 实现，需要把扩容和分裂的流程理解透彻。LRU-K Replacer 的实现相对简单，但引入历史队列和缓存队列的思想惊艳到了我。Buffer Pool Manager 的实现主要是细节较多，在前面两个部分都完成的基础上组织好逻辑即可。</p>
+<p>由于对并发的了解不够多，我仅仅只是在必要的地方“一把大锁”锁住所有东西，没有实现进一步的优化。</p>
+<p>感谢<a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/571927310">这位答主</a>精美的图文讲解，让我少走了许多弯路。</p>
+<p>断断续续几天完成了这份实验记录，稍作休整继续挑战 P2！</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/LABS/" class="category-chain-item">LABS</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/LABS/CMU15-445/" class="category-chain-item">CMU15-445</a>
+  
+  
+    <span>></span>
+    
+  <a href="/categories/LABS/CMU15-445/2022/" class="category-chain-item">2022</a>
+  
+  
+
+  
+
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%AE%9E%E9%AA%8C/">#实验</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>CMU15-445 2022 Project 1</div>
+      <div>https://anotheronezjy.github.io/2023/01/14/CMU-2022-P1/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Asuna</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年1月14日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/01/12/CMU-2022-P0/" title="CMU15-445 2022 Project 0">
+                        <span class="hidden-mobile">CMU15-445 2022 Project 0</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="leancloud-site-pv-container" style="display: none">
+        总访问量 
+        <span id="leancloud-site-pv"></span>
+         次
+      </span>
+    
+    
+      <span id="leancloud-site-uv-container" style="display: none">
+        总访客数 
+        <span id="leancloud-site-uv"></span>
+         人
+      </span>
+    
+    
+
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
