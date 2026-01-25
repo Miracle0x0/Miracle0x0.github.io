@@ -1,0 +1,7 @@
+@inproceedings{zhang2025popfetcher,
+  title={$\{$PopFetcher$\}$: Towards Accelerated $\{$Mixture-of-Experts$\}$ Training Via Popularity Based $\{$Expert-Wise$\}$ Prefetch},
+  author={Zhang, Junyi and Ma, Chuanhu and Wang, Xiong and Nie, Yuntao and Li, Yuqing and Xu, Yuedong and Liao, Xiaofei and Li, Bo and Jin, Hai},
+  booktitle={2025 USENIX Annual Technical Conference (USENIX ATC 25)},
+  pages={1053--1069},
+  year={2025}
+}
