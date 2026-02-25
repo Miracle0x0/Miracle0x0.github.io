@@ -4,7 +4,7 @@ layout: homepage
 
 ## About Me
 
-I am currently a master student in [School of Computer Science and Technology](https://cs.hust.edu.cn/) from [Huazhong University of Science and Technology (HUST)](https://hust.edu.cn/). Before that, I received my B.Eng. degree in [School of Computer Science and Technology](https://cs.hust.edu.cn/) from [Huazhong University of Science and Technology (HUST)](https://hust.edu.cn/).
+Hi there 👋, I’m Junyi Zhang, a 2nd year master student in [School of Computer Science and Technology](https://cs.hust.edu.cn/), [Huazhong University of Science and Technology (HUST)](https://hust.edu.cn/). I'm supervised by Prof. [Xiong Wang](https://wangxionghome.github.io/). Previously, I obtained my bachelor’s degree from [School of Computer Science and Technology](https://cs.hust.edu.cn/), [Huazhong University of Science and Technology (HUST)](https://hust.edu.cn/).
 
 ## Research Interests
 
@@ -34,6 +34,7 @@ I am currently a master student in [School of Computer Science and Technology](h
 ## Selected Honors
 
 - National Scholarship, China, 2025
+- Tencent Scholarship, HUST, 2025
 - First-class Scholarship for Postgraduates, HUST, 2024 - 2025
 - Honored Graduates of HUST, 2024
 
