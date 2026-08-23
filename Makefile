@@ -1,5 +1,20 @@
 .PHONY: help build up down restart logs clean rebuild test
 
+ifeq ($(OS),Windows_NT)
+    OS_TYPE := Windows
+    DOCKER_COMPOSE = docker compose
+else
+    UNAME_S := $(shell uname -s)
+    ifeq ($(UNAME_S),Linux)
+        OS_TYPE := Linux
+        DOCKER_COMPOSE := docker compose
+    endif
+    ifeq ($(UNAME_S),Darwin)
+        OS_TYPE := macOS
+        DOCKER_COMPOSE := docker-compose
+    endif
+endif
+
 default: restart
 
 # 默认目标
@@ -19,31 +34,31 @@ help:
 # 构建镜像
 build:
 	@echo "构建 Docker 镜像..."
-	docker-compose build
+	${DOCKER_COMPOSE} build
 
 # 启动服务
 up:
 	@echo "启动 Jekyll 服务..."
-	docker-compose up -d
+	${DOCKER_COMPOSE} up -d
 	@echo "服务已启动，访问 http://localhost:54000"
 	@echo "LiveReload 已启用，文件保存后将自动刷新浏览器"
 
 # 停止服务
 down:
 	@echo "停止服务..."
-	docker-compose down
+	${DOCKER_COMPOSE} down
 
 # 重启服务
 restart: down up
 
 # 查看日志
 logs:
-	docker-compose logs -f
+	${DOCKER_COMPOSE} logs -f
 
 # 清理
 clean:
 	@echo "清理容器、网络和镜像..."
-	docker-compose down --rmi local --volumes
+	${DOCKER_COMPOSE} down --rmi local --volumes
 	@echo "清理完成"
 
 # 重新构建

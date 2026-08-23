@@ -1,4 +1,6 @@
 source "https://rubygems.org"
 
-gem "jekyll"
-gem "webrick"
+ruby "3.1.7"
+
+gem "jekyll", "4.4.1"
+gem "webrick", "1.9.2"
