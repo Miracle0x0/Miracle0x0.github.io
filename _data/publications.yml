@@ -1,6 +1,6 @@
 main:
   - title: "PopFetcher: Towards Accelerated Mixture-of-Experts Training Via Popularity Based Expert-Wise Prefetch"
-    authors: <strong>Junyi Zhang</strong>, Chuanhu Ma, Xiong Wang* (*Corresponding author), Yuntao Nie, Yuqing Li, Yuedong Xu, Xiaofei Liao, Bo Li, Hai Jin
+    authors: <strong>Junyi Zhang</strong>, Chuanhu Ma, Xiong Wang †, Yuntao Nie, Yuqing Li, Yuedong Xu, Xiaofei Liao, Bo Li, Hai Jin
     conference_short: USENIX ATC
     conference: USENIX Annual Technical Conference <strong>(USENIX ATC)</strong>, 2025.
     pdf: https://www.usenix.org/system/files/atc25-zhang-junyi.pdf

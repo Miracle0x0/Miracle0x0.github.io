@@ -24,8 +24,13 @@ Hi there 👋, I’m Junyi Zhang, a 2nd year master student in [School of Comput
 
 ## Education
 
-- M.S., Computer Science and Technology, [Huazhong University of Science and Technology](https://hust.edu.cn/), 2024 - Now
-- B.Eng., Computer Science and Technology, [Huazhong University of Science and Technology](https://hust.edu.cn/), 2020 - 2024
+- Ph.D., Computer Science and Technology, [Huazhong University of Science and Technology](https://hust.edu.cn/), 2026.09 - now
+- M.S., Computer Science and Technology, [Huazhong University of Science and Technology](https://hust.edu.cn/), 2024.09 - 2026.06
+- B.Eng., Computer Science and Technology, [Huazhong University of Science and Technology](https://hust.edu.cn/), 2020.09 - 2024.06
+
+## Internship
+
+- Research Intern, Tencent Hunyuan (Qingyun), Apr. 2026 - Sept. 2026
 
 {% include_relative _includes/publications.md %}
 
