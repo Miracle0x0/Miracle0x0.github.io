@@ -30,7 +30,7 @@ Hi there 👋, I’m Junyi Zhang, a 2nd year master student in [School of Comput
 
 ## Internship
 
-- Research Intern, Tencent Hunyuan (Qingyun), Apr. 2026 - Sept. 2026
+- Research Intern, Tencent Hunyuan (Qingyun Talent), Apr. 2026 - Sept. 2026
 
 {% include_relative _includes/publications.md %}
 
