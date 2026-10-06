@@ -31,7 +31,7 @@ test('Markdown publishing generates real HTML and excludes drafts', async (t) =>
     const articles = join(root, 'src/content/blog/research');
     await mkdir(articles, { recursive: true });
     await mkdir(join(root, 'src/assets/blog'), { recursive: true });
-    await cp(join(project, 'public/assets/img/avatar.png'), join(root, 'src/assets/blog/fixture.png'));
+    await cp(join(project, 'src/assets/avatar.jpg'), join(root, 'src/assets/blog/fixture.jpg'));
     const article = `---
 title: "Rendering & images"
 description: "A build verification article."
@@ -39,7 +39,7 @@ pubDate: "2026-01-02"
 lang: "zh-CN"
 tags: ["Systems"]
 draft: false
-heroImage: "../../../assets/blog/fixture.png"
+heroImage: "../../../assets/blog/fixture.jpg"
 heroImageAlt: "Fixture cover"
 ---
 
@@ -57,7 +57,7 @@ print("static html")
 | --- | --- |
 | Sample | 42 |
 
-![Inline fixture](../../../assets/blog/fixture.png)
+![Inline fixture](../../../assets/blog/fixture.jpg)
 `;
     await writeFile(join(articles, 'published.md'), article);
     await writeFile(join(articles, 'draft.md'), article.replace('draft: false', 'draft: true').replace('Rendering & images', 'Private draft marker'));
@@ -93,6 +93,16 @@ print("static html")
       assert.match(home, /Ph.D. Student/);
       assert.match(home, /PopFetcher/);
       assert.match(home, /href="https:\/\/hust.edu.cn\/"/);
+      const avatar = home.match(/<img\b[^>]*class="[^"]*\bavatar\b[^"]*"[^>]*>/)[0];
+      const avatarSources = avatar.match(/srcset="([^"]+)"/)[1].split(',');
+      assert.equal(avatarSources.length, 3);
+      for (const source of avatarSources) {
+        const [url] = source.trim().split(/\s+/);
+        assert.match(url, /\.webp$/);
+        assert.ok((await readFile(join(root, 'dist', url))).length > 0);
+      }
+      assert.doesNotMatch(home, /\/assets\/img\/avatar\.png/);
+      assert.doesNotMatch(home, /<script\b/);
       const notFound = await readFile(join(root, 'dist/404.html'), 'utf8');
       assert.match(notFound, /noindex, nofollow/);
     });
@@ -105,10 +115,10 @@ print("static html")
     });
 
     await t.test('missing local images fail the build', async () => {
-      await writeFile(join(articles, 'published.md'), article.replace('![Inline fixture](../../../assets/blog/fixture.png)', '![Missing image](../../../assets/blog/missing.png)'));
+      await writeFile(join(articles, 'published.md'), article.replace('![Inline fixture](../../../assets/blog/fixture.jpg)', '![Missing image](../../../assets/blog/missing.jpg)'));
       const result = build(root);
       assert.notEqual(result.status, 0);
-      assert.match(result.stdout + result.stderr, /missing\.png/);
+      assert.match(result.stdout + result.stderr, /missing\.jpg/);
     });
   } finally {
     await rm(root, { recursive: true, force: true });

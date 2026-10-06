@@ -135,9 +135,11 @@ Blog (/blog/<id>/)
 |-- pnpm-lock.yaml
 |-- astro.config.mjs
 |-- tsconfig.json
-|-- .github/workflows/
-|   |-- ci.yml
-|   `-- deploy.yml
+|-- .github/
+|   |-- actions/build-site/action.yml
+|   `-- workflows/
+|       |-- ci.yml
+|       `-- deploy.yml
 |-- public/
 |   |-- assets/
 |   |   |-- img/
@@ -153,7 +155,9 @@ Blog (/blog/<id>/)
 |   |   |   `-- honors.md
 |   |   `-- blog/
 |   |       `-- hello-astro.md
-|   |-- assets/blog/
+|   |-- assets/
+|   |   |-- avatar.jpg
+|   |   `-- blog/
 |   |-- data/
 |   |   |-- site.ts
 |   |   `-- publications.ts
@@ -200,7 +204,8 @@ Blog (/blog/<id>/)
 | `_includes/services.md` | 不进入首版页面 | 当前未启用，不把模板示例作为个人经历发布 |
 | `_layouts/homepage.html` | layouts 与 components | 按页面外壳、资料、导航和论文拆分 |
 | Sass 与 CSS | `global.css`、`prose.css`、组件样式 | 提取视觉规则，合并主题变量，去掉重复和未使用样式 |
-| 真实头像、favicon、论文图片、CV、BibTeX | `public/assets/` 对应子目录 | 仅迁移实际引用的资源；模板图片与头像备份不自动发布 |
+| 真实头像 | `src/assets/avatar.jpg` | 保留原图，构建时生成 128、256、384 像素的 WebP，浏览器按像素密度选择 |
+| favicon、论文图片、CV、BibTeX | `public/assets/` 对应子目录 | 仅迁移实际引用的资源；模板图片与头像备份不自动发布 |
 | 未来文章图片 | `src/assets/blog/` | 通过 Markdown 相对路径引用，由 Astro 构建处理 |
 | `html_source_file/` | 删除 | 这是模板示例副本，不是当前个人主页的权威源码 |
 | Gemfile、Docker、Makefile、旧说明 | 完成验证后移除或替换 | 最终仅保留 Astro + pnpm 开发入口 |
@@ -335,7 +340,7 @@ mise exec -- pnpm preview
 
 ### 8.2 CI 与部署流程
 
-将验证和发布拆成明确的工作流：`ci.yml` 对开发分支与 PR 执行安装、检查、构建；`deploy.yml` 在 `main` 更新时执行相同构建并部署。上线实施时，将仓库 Settings / Pages 的 Source 从分支构建改为 **GitHub Actions**；仅新增 YAML 不会自动完成这个设置变更。
+将验证和发布拆成明确的工作流：`ci.yml` 对 PR 和手动触发的分支执行安装、检查、构建；`deploy.yml` 在 `main` 更新时执行相同构建并部署。上线实施时，将仓库 Settings / Pages 的 Source 从分支构建改为 **GitHub Actions**；仅新增 YAML 不会自动完成这个设置变更。
 
 ```text
 checkout
@@ -354,7 +359,7 @@ pnpm run check -> pnpm build
    `--> main: configure Pages -> upload dist -> deploy Pages
 ```
 
-CI 使用 `jdx/mise-action` 读取项目工具配置，再显式执行 pnpm 命令；发布使用 GitHub 官方 Pages 配置、上传 artifact 和部署 actions。这样工具版本来自一处配置，不再叠加另一套 Node/pnpm 安装流程。实施时固定各 action 的版本。[mise CI 文档](https://mise.jdx.dev/continuous-integration.html)、[GitHub 自定义 Pages 工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+CI 通过共用的 `.github/actions/build-site/action.yml` 使用 `jdx/mise-action` 读取项目工具配置，缓存 pnpm store 与 Astro 已处理图片，再显式执行 pnpm 命令；发布使用 GitHub 官方 Pages 配置、上传 artifact 和部署 actions。这样工具版本来自一处配置，不再叠加另一套 Node/pnpm 安装流程。实施时固定各 action 的版本。[mise CI 文档](https://mise.jdx.dev/continuous-integration.html)、[GitHub 自定义 Pages 工作流](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 验证任务仅需读取仓库；生产构建任务增加 `pages: read` 以读取 Pages 配置，部署任务使用 `pages: write`、`id-token: write` 和 `github-pages` environment，并依赖构建成功。开发分支和 PR 不部署生产站点，上传内容仅为 `dist/`。任何安装、检查或构建错误直接使任务失败；不切回 Jekyll，也不发布占位页面掩盖问题。
 
@@ -387,7 +392,7 @@ P1–P5 已完成本地实施，P6 尚未执行。实现使用 Astro 7.3.5、Typ
 | 响应式 | 在 `390px`、`768px`、`1280px` 检查首页、列表和长文，覆盖浅色与深色；页面无整体横向溢出，宽代码和表格可局部滚动 |
 | 可访问性 | 键盘导航、可见焦点、图片说明、图标链接名称、正确的标题层级和 `lang`；浏览器缩放可正常使用 |
 | 静态站点行为 | 禁用 JavaScript 后仍可阅读首页、文章及导航；生产不依赖常驻 Node 服务 |
-| 发布链路 | 分支/PR 只验证，`main` 的成功构建发布 `dist/`；GitHub Pages 实际返回预期页面，错误路径进入 404 |
+| 发布链路 | PR/手动分支检查只验证，`main` 的成功构建发布 `dist/`；GitHub Pages 实际返回预期页面，错误路径进入 404 |
 | 文档一致性 | README 中工具安装、写作位置、frontmatter、草稿、图片、预览端口和发布命令与工程一致 |
 
 本地及全新临时工程均已通过 pnpm 锁文件安装、Astro 静态检查（0 错误、0 警告）、静态构建和 5 项自动化测试；浏览器已检查 390px、768px、1280px 下首页、列表、文章的浅色与深色布局，共 18 种组合，未发现页面横向溢出、图片加载失败或浏览器运行错误。生产预览还验证了禁用 JavaScript 后的导航、键盘焦点、附件、空列表、RSS、sitemap 和 404，页面资源不依赖外部服务。公开测试文章仅在临时测试目录中构建；仓库内示例保持草稿。线上工作流与 Pages 发布需在提交、推送及切换发布源后验证。

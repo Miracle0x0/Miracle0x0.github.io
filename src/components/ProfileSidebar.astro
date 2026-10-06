@@ -1,10 +1,12 @@
 ---
+import { Image } from 'astro:assets';
 import { site } from '../data/site';
 import SiteNav from './SiteNav.astro';
 ---
 
 <header class="profile">
-  <img class="avatar" src={site.avatar} alt={`Portrait of ${site.name}`} width="128" height="128" />
+  <Image class="avatar" src={site.avatar} alt={`Portrait of ${site.name}`} width={128} height={128}
+    densities={[1, 2, 3]} format="webp" quality={85} loading="eager" decoding="auto" />
   <h1>{site.name}</h1>
   <p class="position">{site.position}</p>
   <p class="affiliation"><a href={site.affiliationUrl}>{site.affiliation}</a></p>

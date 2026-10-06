@@ -1,3 +1,5 @@
+import avatar from '../assets/avatar.jpg';
+
 export const site = {
   name: 'Junyi Zhang',
   position: 'Ph.D. Student',
@@ -7,7 +9,7 @@ export const site = {
   description: 'Junyi Zhang studies machine learning systems, efficient model training and inference, and mixture-of-experts optimization at HUST.',
   blogDescription: 'Notes on machine learning systems, research, and software.',
   lang: 'en',
-  avatar: '/assets/img/avatar.png',
+  avatar,
   scholar: 'https://scholar.google.com/citations?user=n-68SQEAAAAJ',
   github: 'https://github.com/Miracle0x0',
   cv: '/assets/files/curriculum_vitae.pdf',

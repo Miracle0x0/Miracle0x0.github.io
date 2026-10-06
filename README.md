@@ -103,10 +103,11 @@ PDF、BibTeX 等原样下载的附件放在 `public/assets/`，在文章中使�
 | 简介、研究方向、动态、教育、实习 | `src/content/home/overview.md` |
 | 荣誉 | `src/content/home/honors.md` |
 | 论文及作者、会议、资源链接 | `src/data/publications.ts` |
-| 头像、CV、论文图片和 BibTeX | `public/assets/` |
+| 头像原图 | `src/assets/avatar.jpg`，构建时生成适配不同像素密度的 WebP |
+| CV、论文图片和 BibTeX | `public/assets/` |
 | 首页布局 | `src/layouts/HomeLayout.astro` |
 | 文章模板 | `src/layouts/BlogPost.astro` |
-| 字体、主题颜色与全局样式 | `src/styles/global.css` |
+| 字体、主题颜色与全局样式 | `src/styles/global.css`；桌面首页预加载字体位于 `src/components/BaseHead.astro` |
 | Markdown 排版 | `src/styles/prose.css` |
 
 日常发文只需要 Markdown；调整页面结构时才编辑 Astro 模板。首页正文与博客文章分开管理，论文使用结构化数据，其中可选的 `titleUrl` 用于设置论文标题链接，`links` 用于设置 PDF、Slides、BibTeX 等资源按钮。全站跟随操作系统的浅色或深色偏好。
@@ -131,7 +132,7 @@ PDF、BibTeX 等原样下载的附件放在 `public/assets/`，在文章中使�
 }
 ```
 
-分别为实际提供的粗体、斜体添加声明；可变字体将 `font-weight` 写成支持的范围。默认 Crimson Pro 和 Ubuntu Mono 文件只包含拉丁字符，中文使用系统中文字体；要统一中文外观，需要自行提供覆盖中文字符的字体。字体变量应用于所有页面，文章不需要单独设置字体。
+分别为实际提供的粗体、斜体添加声明；可变字体将 `font-weight` 写成支持的范围。桌面首页预加载正文字体，更换字体时同步修改 `src/components/BaseHead.astro` 中的预加载路径；其他页面和字体按实际使用加载。默认 Crimson Pro 和 Ubuntu Mono 文件只包含拉丁字符，中文使用系统中文字体；要统一中文外观，需要自行提供覆盖中文字符的字体。字体变量应用于所有页面，文章不需要单独设置字体。
 
 ## 检查与构建
 
@@ -165,8 +166,10 @@ Write Markdown -> Local preview -> Push / merge to main
 
 | 工作流 | 触发方式 | 行为 |
 | --- | --- | --- |
-| `Check site` | 非 `main` 分支推送、面向 `main` 的 PR | 安装依赖、检查、测试和构建，不更新生产站点 |
+| `Check site` | 面向 `main` 的 PR，或在 Actions 页面手动运行 | 安装依赖、检查、测试和构建，不更新生产站点 |
 | `Deploy site` | `main` 推送，或在 Actions 页面选择 `main` 手动运行 | 完成相同验证后，将 `dist/` 发布到 Pages |
+
+两个工作流共用 `.github/actions/build-site/action.yml`，按工具版本和锁文件缓存 pnpm 依赖，并按图片及组件内容缓存 Astro 图片处理结果。普通分支推送不重复触发 PR 检查；没有 PR 的分支可手动运行 `Check site`。合并到 `main` 后仍完整检查、测试和构建，再发布产物。
 
 在仓库 **Actions** 页面查看构建日志与部署结果；成功后可打开首页、文章直达链接和 `/rss.xml`。失败时工作流停止，生产站点不会被本次失败的构建替换。更换域名时同步更新 Astro 的 `site`、`public/robots.txt`、Pages 自定义域名设置和 DNS。
 
