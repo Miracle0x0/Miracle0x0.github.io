@@ -1,0 +1,20 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import ProfileSidebar from '../components/ProfileSidebar.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout title={`${site.name} | ${site.affiliation}`} description={site.description} lang={site.lang}>
+  <div class="home-layout">
+    <ProfileSidebar />
+    <main id="main-content" class="home-content"><slot /></main>
+  </div>
+</BaseLayout>
+
+<style>
+  .home-layout { display: grid; grid-template-columns: 14.5rem minmax(0, 1fr); gap: 4rem; align-items: start; max-width: 64rem; margin: 4rem auto 0; padding-inline: 1.5rem; }
+  .home-content { min-width: 0; font-size: 1.0625rem; }
+  @media (max-width: 960px) {
+    .home-layout { grid-template-columns: minmax(0, 1fr); gap: 2rem; max-width: 44rem; margin-top: 2rem; }
+  }
+</style>

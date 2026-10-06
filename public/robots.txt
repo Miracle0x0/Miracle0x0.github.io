@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miracle0x0.github.io/sitemap-index.xml

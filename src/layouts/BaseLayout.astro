@@ -1,0 +1,27 @@
+---
+import type { ComponentProps } from 'astro/types';
+import BaseHead from '../components/BaseHead.astro';
+import { site } from '../data/site';
+import '../styles/global.css';
+
+type Props = ComponentProps<typeof BaseHead> & { lang: string };
+const { lang, ...head } = Astro.props;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head><BaseHead {...head} /></head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <slot />
+    <footer class="site-footer">
+      <span>{site.name}</span>
+      <a href="/rss.xml">RSS</a>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-footer { display: flex; justify-content: space-between; max-width: 64rem; margin: 3rem auto 0; padding: 1.25rem 1.5rem 2rem; color: var(--text-muted); font-size: .85rem; }
+  .site-footer a { color: inherit; }
+</style>

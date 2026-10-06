@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout title={`Page not found | ${site.name}`} description="This page could not be found." lang={site.lang} noindex>
+  <SiteHeader />
+  <main id="main-content" class="reading-layout">
+    <p class="error-code">404</p>
+    <h1>Page not found</h1>
+    <p>The page may have moved, or the address may be incorrect.</p>
+    <p><a href="/">Home</a> <span aria-hidden="true">·</span> <a href="/blog/">Blog</a></p>
+  </main>
+</BaseLayout>
+
+<style>
+  .error-code { color: var(--text-muted); font: 1rem var(--font-code); }
+  h1 { font-size: 2.4rem; }
+  span { margin-inline: .75rem; }
+</style>

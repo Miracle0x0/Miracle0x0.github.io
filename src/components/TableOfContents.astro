@@ -1,0 +1,25 @@
+---
+import type { MarkdownHeading } from 'astro';
+interface Props { headings: MarkdownHeading[]; lang: string }
+const { headings, lang } = Astro.props;
+const entries = headings.filter((heading) => heading.depth === 2 || heading.depth === 3);
+---
+
+{entries.length > 0 && (
+  <nav class="contents" aria-label={lang === 'zh-CN' ? '文章目录' : 'Table of contents'}>
+    <p>{lang === 'zh-CN' ? '目录' : 'On this page'}</p>
+    <ul>{entries.map((heading) => (
+      <li class:list={{ subsection: heading.depth === 3 }}><a href={`#${heading.slug}`}>{heading.text}</a></li>
+    ))}</ul>
+  </nav>
+)}
+
+<style>
+  .contents { border-left: 2px solid var(--border); padding-left: 1.2rem; margin-block: 2.5rem; }
+  p { color: var(--heading); font-weight: 600; margin: 0 0 .5rem; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li { margin-block: .2rem; }
+  .subsection { padding-left: 1rem; }
+  a { color: var(--text-muted); text-decoration: none; }
+  a:hover { color: var(--link); text-decoration: underline; }
+</style>

@@ -1,0 +1,48 @@
+---
+import { site } from '../data/site';
+import SiteNav from './SiteNav.astro';
+---
+
+<header class="profile">
+  <img class="avatar" src={site.avatar} alt={`Portrait of ${site.name}`} width="128" height="128" />
+  <h1>{site.name}</h1>
+  <p class="position">{site.position}</p>
+  <p class="affiliation"><a href={site.affiliationUrl}>{site.affiliation}</a></p>
+  <p class="email">{site.email}</p>
+  <div class="social-links">
+    <a href={site.scholar} aria-label="Google Scholar">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m2 9 10-6 10 6-10 6L2 9Zm4 3v5c3 3 9 3 12 0v-5M22 9v8" /></svg>
+      <span>Scholar</span>
+    </a>
+    <a href={site.cv} aria-label="Curriculum vitae (PDF)">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h8l4 4v14H6V3Zm8 0v5h4M9 12h6M9 16h6" /></svg>
+      <span>CV</span>
+    </a>
+    <a href={site.github} aria-label="GitHub profile">
+      <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18" /></svg>
+      <span>GitHub</span>
+    </a>
+  </div>
+  <SiteNav />
+</header>
+
+<style>
+  .profile { position: sticky; top: 3.5rem; text-align: center; }
+  .avatar { border-radius: 50%; object-fit: cover; margin: 0 auto 1.4rem; }
+  h1 { font-size: 1.85rem; margin-bottom: .65rem; }
+  p { margin: 0; }
+  .position { margin-bottom: .4rem; font-size: 1.08rem; }
+  .affiliation { line-height: 1.45; }
+  .affiliation a { color: inherit; text-decoration: none; }
+  .affiliation a:hover { color: var(--link); }
+  .email { font: .8rem/1.5 var(--font-code); margin-top: .6rem; overflow-wrap: anywhere; }
+  .social-links { display: flex; justify-content: center; gap: 1.1rem; margin: 1.4rem 0 1.8rem; }
+  .social-links a { display: grid; justify-items: center; gap: .3rem; font-size: .8rem; text-decoration: none; }
+  svg { width: 1.15rem; height: 1.15rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .profile :global(.site-nav) { justify-content: center; }
+  @media (max-width: 960px) {
+    .profile { position: static; padding-bottom: 2rem; border-bottom: 1px solid var(--border); }
+    .avatar { width: 100px; height: 100px; margin-bottom: 1rem; }
+    .social-links { margin-bottom: 1rem; }
+  }
+</style>

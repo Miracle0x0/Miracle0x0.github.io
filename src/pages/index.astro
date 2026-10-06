@@ -1,0 +1,13 @@
+---
+import HomeLayout from '../layouts/HomeLayout.astro';
+import PublicationList from '../components/PublicationList.astro';
+import { Content as Overview } from '../content/home/overview.md';
+import { Content as Honors } from '../content/home/honors.md';
+import '../styles/prose.css';
+---
+
+<HomeLayout>
+  <div class="prose"><Overview /></div>
+  <PublicationList />
+  <div class="prose"><Honors /></div>
+</HomeLayout>

@@ -1,71 +1,73 @@
-.PHONY: help build up down restart logs clean rebuild test
+SHELL := /bin/bash
+.DEFAULT_GOAL := help
 
-ifeq ($(OS),Windows_NT)
-    OS_TYPE := Windows
-    DOCKER_COMPOSE = docker compose
-else
-    UNAME_S := $(shell uname -s)
-    ifeq ($(UNAME_S),Linux)
-        OS_TYPE := Linux
-        DOCKER_COMPOSE := docker compose
-    endif
-    ifeq ($(UNAME_S),Darwin)
-        OS_TYPE := macOS
-        DOCKER_COMPOSE := docker-compose
-    endif
-endif
+PNPM := mise exec -- pnpm
+# HOST ?= 127.0.0.1
+HOST ?= 0.0.0.0
+PORT ?= 4321
+export HOST PORT SLUG
 
-default: restart
+.PHONY: help install dev preview build check test verify new-post status stop logs preview-logs clean
 
-# 默认目标
 help:
-	@echo "Jekyll Docker 开发环境"
-	@echo ""
-	@echo "可用命令:"
-	@echo "  make build    - 构建 Docker 镜像"
-	@echo "  make up       - 启动服务"
-	@echo "  make down     - 停止服务"
-	@echo "  make restart  - 重启服务"
-	@echo "  make logs     - 查看日志"
-	@echo "  make clean    - 清理容器和网络"
-	@echo "  make rebuild  - 重新构建并启动"
-	@echo "  make test     - 测试服务是否正常"
+	@printf '%s\n' \
+	  '常用命令：' \
+	  '  make install                   安装项目工具和锁定的依赖' \
+	  '  make dev                       启动开发预览（含草稿）' \
+	  '  make preview                   构建并启动生产预览' \
+	  '  make build                     构建静态网页到 dist/' \
+	  '  make check                     检查 Astro 和 TypeScript' \
+	  '  make test                      运行自动化测试' \
+	  '  make verify                    依次执行检查、测试、构建' \
+	  '  make new-post SLUG=my-post      新建 Markdown 草稿' \
+	  '  make status                    查看开发与预览服务状态' \
+	  '  make stop                      停止开发与预览服务' \
+	  '  make logs                      查看开发服务日志' \
+	  '  make preview-logs              查看生产预览日志' \
+	  '  make clean                     删除 dist/ 和 .astro/' \
+	  '' \
+	  "预览参数：HOST=$$HOST PORT=$$PORT，可在命令后覆盖。"
 
-# 构建镜像
+install:
+	mise install node pnpm
+	$(PNPM) install --frozen-lockfile
+
+dev:
+	$(PNPM) dev --host "$$HOST" --port "$$PORT"
+
+preview: build
+	$(PNPM) preview --host "$$HOST" --port "$$PORT"
+
 build:
-	@echo "构建 Docker 镜像..."
-	${DOCKER_COMPOSE} build
+	$(PNPM) build
 
-# 启动服务
-up:
-	@echo "启动 Jekyll 服务..."
-	${DOCKER_COMPOSE} up -d
-	@echo "服务已启动，访问 http://localhost:54000"
-	@echo "LiveReload 已启用，文件保存后将自动刷新浏览器"
+check:
+	$(PNPM) run check
 
-# 停止服务
-down:
-	@echo "停止服务..."
-	${DOCKER_COMPOSE} down
-
-# 重启服务
-restart: down up
-
-# 查看日志
-logs:
-	${DOCKER_COMPOSE} logs -f
-
-# 清理
-clean:
-	@echo "清理容器、网络和镜像..."
-	${DOCKER_COMPOSE} down --rmi local --volumes
-	@echo "清理完成"
-
-# 重新构建
-rebuild: clean build up
-
-# 测试服务
 test:
-	@echo "测试服务..."
-	@sleep 3
-	@curl -s http://localhost:4000 > /dev/null && echo "✓ 服务正常运行" || echo "✗ 服务未响应"
+	$(PNPM) test
+
+verify:
+	$(PNPM) run check
+	$(PNPM) test
+	$(PNPM) build
+
+new-post:
+	$(PNPM) new:post "$$SLUG"
+
+status:
+	$(PNPM) exec astro dev status
+	$(PNPM) exec astro preview status
+
+stop:
+	$(PNPM) exec astro dev stop
+	$(PNPM) exec astro preview stop
+
+logs:
+	$(PNPM) exec astro dev logs
+
+preview-logs:
+	$(PNPM) exec astro preview logs
+
+clean:
+	rm -rf -- dist .astro

@@ -1,0 +1,48 @@
+---
+import type { MarkdownHeading } from 'astro';
+import { Image } from 'astro:assets';
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import TableOfContents from '../components/TableOfContents.astro';
+import { formatDate } from '../lib/posts';
+import { site } from '../data/site';
+import '../styles/prose.css';
+
+interface Props { post: CollectionEntry<'blog'>; headings: MarkdownHeading[] }
+const { post: { data }, headings } = Astro.props;
+const chinese = data.lang === 'zh-CN';
+---
+
+<BaseLayout title={`${data.title} | ${site.name}`} description={data.description} lang={data.lang}
+  type="article" image={data.heroImage} imageAlt={data.heroImageAlt} noindex={data.draft}
+  published={data.pubDate} updated={data.updatedDate}>
+  <SiteHeader />
+  <main id="main-content" class="reading-layout">
+    <article>
+      <header class="post-header">
+        {data.draft && <p class="draft-label">{chinese ? '草稿 · 仅在本地开发预览中可见' : 'Draft · Visible only in local development'}</p>}
+        <div class="post-dates">
+          <time datetime={data.pubDate.toISOString()}>{formatDate(data.pubDate, data.lang)}</time>
+          {data.updatedDate && <span>{chinese ? '更新于' : 'Updated'} <time datetime={data.updatedDate.toISOString()}>{formatDate(data.updatedDate, data.lang)}</time></span>}
+        </div>
+        <h1>{data.title}</h1>
+        <p class="description">{data.description}</p>
+        {data.tags.length > 0 && <ul class="tags" aria-label={chinese ? '标签' : 'Tags'}>{data.tags.map((tag) => <li>{tag}</li>)}</ul>}
+      </header>
+      {data.heroImage && <Image class="hero-image" src={data.heroImage} alt={data.heroImageAlt!} width={760} />}
+      <TableOfContents headings={headings} lang={data.lang} />
+      <div class="prose article-prose"><slot /></div>
+    </article>
+    <a class="back-link" href="/blog/">← {chinese ? '返回文章列表' : 'All posts'}</a>
+  </main>
+</BaseLayout>
+
+<style>
+  .post-header { margin-bottom: 2.5rem; }
+  .post-dates { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--text-muted); font-size: .9rem; }
+  h1 { font-size: clamp(2rem, 5vw, 2.9rem); margin: .8rem 0 1rem; line-height: 1.16; }
+  .description { font-size: 1.25rem; color: var(--text-muted); }
+  .hero-image { width: 100%; height: auto; border-radius: .25rem; }
+  .back-link { display: inline-block; margin-top: 3rem; }
+</style>

@@ -1,0 +1,37 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { formatDate, postUrl } from '../lib/posts';
+
+interface Props { posts: CollectionEntry<'blog'>[] }
+const { posts } = Astro.props;
+---
+
+{posts.length === 0 ? (
+  <p class="empty-state">No posts yet.</p>
+) : (
+  <ol class="posts">
+    {posts.map((post) => (
+      <li lang={post.data.lang}>
+        <div class="meta">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate, post.data.lang)}</time>
+          {post.data.draft && <span class="draft-label">Draft · 草稿</span>}
+        </div>
+        <h2><a href={postUrl(post)}>{post.data.title}</a></h2>
+        <p>{post.data.description}</p>
+        {post.data.tags.length > 0 && <ul class="tags" aria-label="Tags">{post.data.tags.map((tag) => <li>{tag}</li>)}</ul>}
+      </li>
+    ))}
+  </ol>
+)}
+
+<style>
+  .posts { list-style: none; padding: 0; margin: 0; }
+  .posts > li { padding-block: 2rem; border-top: 1px solid var(--border); }
+  .meta { display: flex; gap: 1rem; flex-wrap: wrap; color: var(--text-muted); font-size: .9rem; }
+  h2 { font-size: 1.65rem; margin: .55rem 0 .65rem; }
+  h2 a { color: var(--heading); text-decoration: none; }
+  h2 a:hover { color: var(--link); text-decoration: underline; }
+  p { margin: 0; font-size: 1.1rem; }
+  .tags { margin-top: .85rem; }
+  .empty-state { padding-block: 2rem; border-top: 1px solid var(--border); color: var(--text-muted); }
+</style>

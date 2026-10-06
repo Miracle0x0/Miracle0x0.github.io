@@ -1,0 +1,50 @@
+---
+import { publications } from '../data/publications';
+---
+
+<section aria-labelledby="publications">
+  <h2 id="publications">Publications</h2>
+  <p class="author-note">* indicates equal contribution; † indicates corresponding authors.</p>
+  <ol class="publications">
+    {publications.map((publication) => (
+      <li class="publication">
+        <div class="illustration">
+          <img src={publication.image} alt={publication.imageAlt} width="800" height="344" loading="lazy" />
+          <span class="venue">{publication.conferenceShort} {publication.year}</span>
+        </div>
+        <div>
+          <h3>{publication.titleUrl ? <a href={publication.titleUrl}>{publication.title}</a> : publication.title}</h3>
+          <p class="authors">{publication.authors.map((author, index) => (
+            <>{index > 0 && ', '}{author.highlighted ? <strong>{author.name}</strong> : author.name}{author.corresponding && ' †'}</>
+          ))}</p>
+          <p class="conference"><em>{publication.conference} <strong>({publication.conferenceShort})</strong>, {publication.year}.</em></p>
+          <ul class="resources" aria-label="Publication resources">
+            {publication.links.map((link) => <li><a href={link.href}>{link.label}</a></li>)}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ol>
+</section>
+
+<style>
+  .author-note { color: var(--text-muted); font-size: .9rem; margin-top: -.3rem; }
+  .publications { list-style: none; padding: 0; }
+  .publication { display: grid; grid-template-columns: 11rem minmax(0, 1fr); gap: 1.35rem; align-items: stretch; margin-block: 1.5rem; }
+  .illustration { display: grid; grid-template-rows: minmax(0, 1fr) auto; min-height: 0; }
+  .illustration img { width: 100%; height: 100%; min-height: 0; object-fit: cover; border: 1px solid var(--border); border-radius: .2rem; }
+  .venue { display: block; margin-top: .5rem; color: var(--heading); font-size: .8rem; text-align: center; }
+  h3 { font-size: 1.05rem; line-height: 1.35; margin: 0 0 .6rem; }
+  h3 a { color: inherit; text-decoration: none; }
+  h3 a:hover { text-decoration: underline; }
+  .authors, .conference { font-size: .95rem; line-height: 1.5; margin: 0 0 .5rem; }
+  .resources { display: flex; gap: .5rem; flex-wrap: wrap; list-style: none; padding: 0; margin: .8rem 0 0; }
+  .resources > li { margin: 0; }
+  .resources a { display: inline-block; border: 1px solid var(--border); padding: .15rem .65rem; border-radius: .15rem; font-size: .85rem; text-decoration: none; }
+  .resources a:hover { border-color: var(--link); background: var(--surface); }
+  @media (max-width: 520px) {
+    .publication { grid-template-columns: minmax(0, 1fr); }
+    .illustration { display: block; max-width: 20rem; }
+    .illustration img { height: auto; aspect-ratio: 16 / 10; }
+  }
+</style>

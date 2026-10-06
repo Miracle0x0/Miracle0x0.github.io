@@ -1,0 +1,14 @@
+---
+import SiteNav from './SiteNav.astro';
+import { site } from '../data/site';
+---
+
+<header class="site-header">
+  <a class="name" href="/">{site.name}</a>
+  <SiteNav />
+</header>
+
+<style>
+  .site-header { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; width: min(100% - 3rem, 54rem); margin: 2rem auto 0; padding-bottom: 1.25rem; border-bottom: 1px solid var(--border); }
+  .name { color: var(--heading); font: 600 1.3rem/1.2 var(--font-heading); text-decoration: none; }
+</style>

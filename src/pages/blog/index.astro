@@ -1,0 +1,25 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SiteHeader from '../../components/SiteHeader.astro';
+import PostList from '../../components/PostList.astro';
+import { site } from '../../data/site';
+import { getPosts } from '../../lib/posts';
+const posts = await getPosts();
+---
+
+<BaseLayout title={`Blog | ${site.name}`} description={site.blogDescription} lang={site.lang}>
+  <SiteHeader />
+  <main id="main-content" class="reading-layout">
+    <header class="blog-intro">
+      <h1>Blog</h1>
+      <p>{site.blogDescription}</p>
+    </header>
+    <PostList posts={posts} />
+  </main>
+</BaseLayout>
+
+<style>
+  .blog-intro { margin-bottom: 2.5rem; }
+  h1 { font-size: 2.8rem; margin-bottom: .7rem; }
+  .blog-intro p { font-size: 1.2rem; color: var(--text-muted); }
+</style>
